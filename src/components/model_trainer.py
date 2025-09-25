@@ -30,12 +30,13 @@ class ModelTrainer:
         try:
             logging.info('splitting ytraing and test data')
 
-            X_train, y_train, X_test, y_test=(
-                train_array[:,:-1],
-                train_array[:,-1],
-                test_array[:,:-1],
-                test_array[:,-1]
+            X_train, y_train, X_test, y_test = (
+                train_array[:,:-1],  # all rows, every column except the last column → input features
+                train_array[:,-1],   # all rows, only the last column → target/labels
+                test_array[:,:-1],   # same for test set → input features
+                test_array[:,-1]     # same for test set → target/labels
             )
+
 
             models = {
                 "Random Forest": RandomForestRegressor(),
@@ -47,6 +48,7 @@ class ModelTrainer:
                 "CatBoost": CatBoostRegressor(),
                 "AdaBoost": AdaBoostRegressor()
             }
+            # calling the evaluate function from utils.py
             model_report:dict=evaluate_model(
                 X_train=X_train,
                 y_train=y_train,

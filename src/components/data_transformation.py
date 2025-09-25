@@ -31,6 +31,7 @@ class DataTransformation:
                 'test_preparation_course'
             ]
 
+            # pipeline for numerical data transformation
             num_pipeline = Pipeline(
                 steps=[
                     ('imputer', SimpleImputer(strategy='median')),
@@ -39,6 +40,7 @@ class DataTransformation:
             )
             logging.info('numerical columns encoding completed')
 
+            # pipeline for categorical data transformation
             categ_pipeline = Pipeline(
                 steps=[
                     ('imputer', SimpleImputer(strategy='most_frequent')),
@@ -47,7 +49,8 @@ class DataTransformation:
                 ]
             )
             logging.info('categorical columns encoding completed')
-
+            
+            # pipeline for transforming both data
             preprocessor = ColumnTransformer([
                 ('num_pipeline', num_pipeline, numerical_column),
                 ('categ_pipeline', categ_pipeline, categorical_columns)
@@ -57,6 +60,7 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e, sys)
         
+
     def initiate_data_transformation(self, train_path, test_path):
         try:
             train_df = pd.read_csv(train_path)
@@ -67,18 +71,22 @@ class DataTransformation:
             preprocessing_obj = self.get_data_transformer_object()
 
             target_column_name = 'math_score'
-
+            
+            # dropping the target features because we don't do any kind of transformation to the target column
             input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
-            target_feature_train_df = train_df[target_column_name]
-
             input_feature_test_df = test_df.drop(columns=[target_column_name], axis=1)
+
+            # target features
+            target_feature_train_df = train_df[target_column_name]
             target_feature_test_df = test_df[target_column_name]
 
             logging.info('applying preprocessor obj')
 
+            # transforming the input features
             input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
 
+            # np.c_[] concatenates the arrays column-wise ****
             train_arr = np.c_[
                 input_feature_train_arr, np.array(target_feature_train_df)
             ]
@@ -86,6 +94,7 @@ class DataTransformation:
                 input_feature_test_arr, np.array(target_feature_test_df)
             ]
 
+            # saving the preprocessor.pkl
             save_object(
                 file_path=self.datatransformation_config.preprocessor_obj_file_path,
                 obj=preprocessing_obj

@@ -7,7 +7,7 @@ from src.exception import CustomException
 from sklearn.metrics import r2_score
 import dill
 
-
+# functiong for saving any object to the specific path
 def save_object(file_path, obj):
     try:
         dir_path = os.path.dirname(file_path)
@@ -20,6 +20,7 @@ def save_object(file_path, obj):
         raise CustomException(e, sys)
     
 
+# fucntion for evaluating the model
 def evaluate_model(X_train, y_train, X_test, y_test, models):
     try:
         report = {}
