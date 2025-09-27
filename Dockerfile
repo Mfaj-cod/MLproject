@@ -1,6 +1,14 @@
-FROM python:3.8-slim-buster
+# Use a modern, supported base image
+FROM python:3.8-slim
+
 WORKDIR /app
 COPY . /app
-RUN apt update -y && apt install awscli -y
-RUN pip install -r requirements.txt
+
+# Install AWS CLI via pip (recommended, no apt issues)
+RUN pip install --no-cache-dir awscli
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Start the app
 CMD ["python", "app.py"]
